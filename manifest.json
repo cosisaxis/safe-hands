@@ -1,25 +1,22 @@
 {
-    "manifest_version": 2,
-    "name": "Blocked Site Notifier",
-    "version": "1.0",
-    "background": {
-      "scripts": ["background.js"]
-    },
-    "permissions": [
-      "webRequest",
-      "webRequestBlocking",
-      "notifications",
-      "storage",
-      "http://*/*",
-      "https://*/*"
-    ],
-    "browser_action": {
-      "default_popup": "popup.html",
-      "default_icon": {
-        "16": "assets/icon16.png",
-        "48": "assets/icon48.png",
-        "128": "assets/icon128.png"
-      }
-    }
+  "manifest_version": 2,
+  "name": "Study Time Tracker",
+  "version": "1.0",
+  "description": "Chrome extension to track study time and send notifications",
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+  "permissions": ["tabs", "storage", "https://api.twilio.com/*"],
+  "icons": {
+    "16": "icon.png",
+    "48": "icon.png",
+    "128": "icon.png"
+  },
+  "browser_action": {
+    "default_popup": "popup.html",
+    "default_icon": "icon.png"
   }
+}
+
   
