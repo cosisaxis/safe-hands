@@ -4,18 +4,15 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Worker</title>
     <link rel="stylesheet" type="text/css" href="popup.css">
 </head>
 <body>
-    <h1>Blocked Site Notifier</h1>
-  <form id="blocklist-form">
-    <label for="blocklist">Blocked Sites:</label>
-    <textarea id="blocklist" rows="4"></textarea>
-    <button type="submit">Save</button>
-  </form>
+  <h1>Restricted Websites</h1>
+  <input type="text" id="websiteInput" placeholder="Enter a website URL">
+  <button id="addWebsiteButton">Add Website</button>
+  <ul id="blockedWebsitesList"></ul>
 
   <script src="popup.js"></script>
-    
 </body>
 </html>
