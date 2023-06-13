@@ -27,7 +27,25 @@ document.addEventListener("DOMContentLoaded", function () {
     function addBlockedWebsiteToList(website) {
       const listItem = document.createElement("li");
       listItem.textContent = website;
+      
+      const removeButton = document.createElement("button");
+      removeButton.textContent = "Remove";
+      removeButton.addEventListener("click", function () {
+        removeBlockedWebsite(website);
+        listItem.remove();
+      });
+      
+      listItem.appendChild(removeButton);
       blockedWebsitesList.appendChild(listItem);
     }
+    
+    function removeBlockedWebsite(website) {
+      chrome.storage.sync.get("blocklist", function (result) {
+        const blocklist = result.blocklist || [];
+        const updatedBlocklist = blocklist.filter(item => item !== website);
+        chrome.storage.sync.set({ blocklist: updatedBlocklist });
+      });
+    }
+    
   });
   
