@@ -1,33 +1,37 @@
-// Event listener for web requests
-chrome.webRequest.onBeforeRequest.addListener(
-    function(details) {
-      const url = details.url;
-      if (shouldBlock(url)) {
-        sendEmail("Your friend's email", "Blocked Site Notification", "You visited a blocked website: " + url);
-      }
-    },
-    { urls: ["<all_urls>"] },
-    ["blocking"]
-  );
-  
-  // Function to check if the URL should be blocked
-  function shouldBlock(url) {
-    const blockedSites = JSON.parse(localStorage.getItem("blockedSites")) || [];
-    return blockedSites.includes(url);
+chrome.tabs.onUpdated.addListener(async function (tabId, changeInfo, tab) {
+  if (changeInfo.status === "complete") {
+    const blocklist = await getBlocklist();
+
+    const url = new URL(tab.url);
+    if (blocklist.includes(url.hostname)) {
+      sendNotification();
+    }
   }
-  
-  // Function to send an email using EmailJS
-  function sendEmail(toEmail, subject, body) {
-    Email.send({
-      SecureToken: "your_emailjs_secure_token",
-      To: toEmail,
-      From: "your_emailjs_registered_email",
-      Subject: subject,
-      Body: body
-    }).then(
-      message => console.log("Email sent successfully:", message)
-    ).catch(
-      error => console.error("Error sending email:", error)
-    );
-  }
-  
+});
+
+async function getBlocklist() {
+  return new Promise((resolve, reject) => {
+    chrome.storage.sync.get("blocklist", (result) => {
+      const blocklist = result.blocklist || [];
+      resolve(blocklist);
+    });
+  });
+}
+
+function sendNotification() {
+  const accountSid = "YOUR_TWILIO_ACCOUNT_SID";
+  const authToken = "YOUR_TWILIO_AUTH_TOKEN";
+  const client = twilio(accountSid, authToken);
+
+  const phoneNumber = "YOUR_FRIENDS_PHONE_NUMBER";
+  const message = "You are wasting time! Focus on your work!";
+
+  client.messages
+    .create({
+      body: message,
+      from: "YOUR_TWILIO_PHONE_NUMBER",
+      to: phoneNumber
+    })
+    .then(message => console.log("Notification sent!"))
+    .catch(error => console.error(error));
+}
