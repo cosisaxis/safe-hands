@@ -8,11 +8,20 @@
     <link rel="stylesheet" type="text/css" href="popup.css">
 </head>
 <body>
-  <h1>Restricted Websites</h1>
-  <input type="text" id="websiteInput" placeholder="Enter a website URL">
-  <button id="addWebsiteButton">Add Website</button>
-  <ul id="blockedWebsitesList"></ul>
-
+  <h1>Website Blocker Options</h1>
+  <div>
+    <label for="websites">Blocked Websites:</label>
+    <input type="text" id="websites" placeholder="Enter blocked websites (e.g., example.com)">
+  </div>
+  <div>
+    <label for="startTime">Study Session Start Time:</label>
+    <input type="time" id="startTime">
+  </div>
+  <div>
+    <label for="endTime">Study Session End Time:</label>
+    <input type="time" id="endTime">
+  </div>
+  <button id="saveBtn">Save</button>
   <script src="popup.js"></script>
 </body>
 </html>
