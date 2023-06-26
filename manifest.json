@@ -3,23 +3,17 @@
   "name": "Website Blocker",
   "version": "1.0",
   "description": "Blocks specified websites during study/work sessions",
-  "permissions": [
-    "alarms",
-    "notifications",
-    "webRequest",
-    "webRequestBlocking",
-    "storage"
-  ],
+  "permissions": ["alarms", "notifications", "scripting", "storage"],
+  "host_permissions": ["*://*/*"],
   "background": {
     "service_worker": "background.js"
   },
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
-      "16": "icon.png",
-      "48": "icon.png",
-      "128": "icon.png"
+      "16": "images/icon-16.png",
+      "48": "images/icon-48.png",
+      "128": "images/icon-128.png"
     }
   }
 }
-
