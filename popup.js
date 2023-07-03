@@ -30,7 +30,7 @@ function saveSettings() {
 }
 
 function restoreSettings() {
-  chrome.storage.sync.get(['blockedSites', 'friendPhoneNumber'], ({ blockedSites, friendPhoneNumber }) => {
+  chrome.storage.sync.get(['blockedSites', 'friendPhoneNumber', 'startTime', 'endTime'], ({ blockedSites, friendPhoneNumber, startTime, endTime }) => {
     if (blockedSites) {
       const blockedSitesInput = document.getElementById('blockedSites');
       blockedSitesInput.value = blockedSites.join(', ');
@@ -40,6 +40,7 @@ function restoreSettings() {
       const friendPhoneNumberInput = document.getElementById('friendPhoneNumber');
       friendPhoneNumberInput.value = friendPhoneNumber;
     }
+
     if (startTime) {
       const startTimeInput = document.getElementById('startTime');
       startTimeInput.value = startTime;
@@ -51,4 +52,5 @@ function restoreSettings() {
     }
   });
 }
+
 
