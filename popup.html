@@ -8,21 +8,19 @@
     <link rel="stylesheet" type="text/css" href="popup.css">
 </head>
 <body>
-  <h3>Timer</h3>
+  <h2>Banned Site Notifier</h2>
+  <form id="settings-form">
+    <label for="banned-sites">Banned Sites (comma-separated):</label>
+    <input type="text" id="banned-sites" name="banned-sites" required><br><br>
 
-  <label for="blockedSites">Blocked Sites (comma-separated):</label>
-  <input type="text" id="blockedSites" placeholder="Enter blocked sites">
+    <label for="session-duration">Work Session Duration (in minutes):</label>
+    <input type="number" id="session-duration" name="session-duration" required><br><br>
 
-  <label for="friendPhoneNumber">Friend's Phone Number:</label>
-  <input type="text" id="friendPhoneNumber" placeholder="Enter phone number">
+    <label for="friend-email">Friend's Email:</label>
+    <input type="email" id="friend-email" name="friend-email" required><br><br>
 
-  <label for="startTime">Start Time:</label>
-  <input type="time" id="startTime">
-
-  <label for="endTime">End Time:</label>
-  <input type="time" id="endTime">
-
-  <button id="saveBtn">Save</button>
+    <input type="submit" value="Save Settings">
+  </form>
 
   <script src="popup.js"></script>
 </body>

@@ -1,85 +1,53 @@
-function sendSMS(phoneNumber) {
-  const accountSid = 'YOUR_TWILIO_ACCOUNT_SID';
-  const authToken = 'YOUR_TWILIO_AUTH_TOKEN';
-  const twilioPhoneNumber = 'YOUR_TWILIO_PHONE_NUMBER';
-
-  const body = 'Your friend visited one of the sites they shouldn\'t be visiting.';
-  const url = `https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`;
-
-  const params = {
-    body,
-    from: twilioPhoneNumber,
-    to: phoneNumber
-  };
-
-  const headers = {
-    'Authorization': 'Basic ' + btoa(`${accountSid}:${authToken}`),
-    'Content-Type': 'application/x-www-form-urlencoded'
-  };
-
-  fetch(url, {
-    method: 'POST',
-    headers,
-    body: new URLSearchParams(params)
-  })
-    .then(response => response.json())
-    .then(data => console.log('SMS sent:', data.sid))
-    .catch(error => console.error('Error sending SMS:', error));
-}
-
-chrome.runtime.onInstalled.addListener(() => {
-  chrome.storage.sync.set({ blockedSites: [], startTime: '', endTime: '', friendPhoneNumber: '' });
-});
-
-chrome.declarativeNetRequest.updateDynamicRules({ removeRuleIds: ['blockRule'] });
-
-chrome.storage.onChanged.addListener(({ blockedSites }) => {
-  if (blockedSites && blockedSites.newValue) {
-    const rule = {
-      id: 'blockRule',
-      priority: 1,
-      action: {
-        type: 'block'
-      },
-      condition: {
-        urlFilter: {
-          domains: blockedSites.newValue
-        }
-      }
-    };
-
-    chrome.declarativeNetRequest.updateDynamicRules({
-      addRules: [rule]
-    });
-  }
-});
-
-chrome.webNavigation.onCommitted.addListener(({ url }) => {
-  chrome.storage.sync.get(['blockedSites', 'friendPhoneNumber', 'startTime', 'endTime'], ({ blockedSites, friendPhoneNumber, startTime, endTime }) => {
-    if (blockedSites && blockedSites.length > 0) {
-      const visitedBlockedSite = blockedSites.some(site => url.includes(site));
-      const currentTime = new Date();
-      const currentHour = currentTime.getHours();
-      const currentMinute = currentTime.getMinutes();
-      const startTimeArray = startTime.split(':');
-      const startHour = parseInt(startTimeArray[0]);
-      const startMinute = parseInt(startTimeArray[1]);
-      const endTimeArray = endTime.split(':');
-      const endHour = parseInt(endTimeArray[0]);
-      const endMinute = parseInt(endTimeArray[1]);
-
-      if (visitedBlockedSite && currentHour >= startHour && currentHour < endHour) {
-        if (
-          (currentHour === startHour && currentMinute >= startMinute) ||
-          (currentHour === endHour - 1 && currentMinute < endMinute) ||
-          (currentHour > startHour && currentHour < endHour - 1)
-        ) {
-          if (friendPhoneNumber) {
-            sendSMS(friendPhoneNumber);
-          }
-        }
-      }
+chrome.webNavigation.onCompleted.addListener(function(details) {
+  chrome.storage.sync.get('settings', function(data) {
+    var settings = data.settings;
+    if (!settings) return;
+  
+    var bannedSites = settings.bannedSites.split(',');
+    var sessionDuration = parseInt(settings.sessionDuration);
+    var friendEmail = settings.friendEmail;
+  
+    var url = new URL(details.url);
+    if (bannedSites.includes(url.hostname)) {
+      sendEmail(friendEmail, "They're visiting a banned site: " + url.href);
     }
   });
 });
 
+function sendEmail(to, message) {
+  var subject = "Banned Site Notification";
+  var body = message;
+
+  // Send email using Gmail API
+  gapi.client.init({
+    apiKey: 'YOUR_API_KEY',
+    clientId: 'YOUR_CLIENT_ID',
+    discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/gmail/v1/rest'],
+    scope: 'https://www.googleapis.com/auth/gmail.send'
+  }).then(function() {
+    return gapi.client.gmail.users.messages.send({
+      'userId': 'me',
+      'resource': {
+        'raw': base64UrlEncode(createEmail(to, 'me', subject, body))
+      }
+    });
+  }).then(function(response) {
+    console.log('Email sent successfully');
+  }, function(error) {
+    console.error('Error sending email:', error);
+  });
+}
+
+function createEmail(to, from, subject, message) {
+  var email = "From: " + from + "\r\n";
+  email += "To: " + to + "\r\n";
+  email += "Subject: " + subject + "\r\n";
+  email += "\r\n" + message + "\r\n";
+  var encodedEmail = btoa(email).replace(/\+/g, '-').replace(/\//g, '_');
+  return encodedEmail;
+}
+
+function base64UrlEncode(str) {
+  var base64 = btoa(str);
+  return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
